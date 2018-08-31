@@ -161,8 +161,8 @@ return [
         Backpack\Base\BaseServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-        Kordy\Ticketit\TicketitServiceProvider::class,
-
+        //Kordy\Ticketit\TicketitServiceProvider::class,
+        App\Providers\ExtendedTicketitServiceProvider::class
     ],
 
     /*
