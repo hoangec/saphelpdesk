@@ -8,6 +8,7 @@
 /.vagrant
 /DB
 /laradock
+/Vagrantfile
 Homestead.json
 Homestead.yaml
 npm-debug.log
