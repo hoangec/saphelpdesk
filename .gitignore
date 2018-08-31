@@ -10,6 +10,7 @@
 /laradock
 /Vagrantfile
 Homestead.json
+Vagrantfile
 Homestead.yaml
 npm-debug.log
 yarn-error.log
