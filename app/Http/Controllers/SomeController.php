@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Http\Controllers;
 
@@ -16,9 +16,9 @@ use Kordy\Ticketit\Models\Priority;
 use Kordy\Ticketit\Models\Setting;
 use Kordy\Ticketit\Models\Status;
 use Kordy\Ticketit\Models\Ticket;
-
+use PDF;
 class SomeController extends TicketsController {
-	
+
 	public function data($complete = 1)
 	{
 	    if (LaravelVersion::min('5.4')) {
@@ -52,7 +52,7 @@ class SomeController extends TicketsController {
 	    }
 
 	    $collection
-	        ->join('users', 'users.id', '=', 'ticketit.user_id')	        
+	        ->join('users', 'users.id', '=', 'ticketit.user_id')
 	        ->join('ticketit_statuses', 'ticketit_statuses.id', '=', 'ticketit.status_id')
 	        ->join('companies', 'companies.id', '=', 'ticketit.company_id')
 	        ->join('ticketit_priorities', 'ticketit_priorities.id', '=', 'ticketit.priority_id')
@@ -85,7 +85,7 @@ class SomeController extends TicketsController {
 	    // in previous laravel-datatables versions escaping columns wasn't defaut
 	    if (LaravelVersion::min('5.4')) {
 	        $collection->rawColumns(['code','subject', 'status', 'priority', 'category', 'agent']);
-	    }	    
+	    }
 	    return $collection->make(true);
 	}
 	public function renderTicketTable($collection)
@@ -136,7 +136,7 @@ class SomeController extends TicketsController {
 	    return $collection;
 	}
 	public function store(Request $request)
-	{	
+	{
 		$messages = [
 			'content.required' => 'Vui lòng đính kèm hình ảnh cho yêu cầu'
 		];
@@ -169,19 +169,19 @@ class SomeController extends TicketsController {
 
 	    return redirect()->action('SomeController@index');
 	}
-	private function generateTicketCode(TicketAdv $ticket){		
+	private function generateTicketCode(TicketAdv $ticket){
 		$category = CategoryAdv::findOrFail($ticket->category_id);
 		$code = $category->code . $ticket->date_request->day . $ticket->date_request->month . $ticket->date_request->year . $ticket->id;
 		$ticket->code = $code;
-		return $ticket;		
+		return $ticket;
 	}
 	public function createCus($type='')
-	{		
-		$user = backpack_auth()->user();		
-		$companies = $user->companies;	
+	{
+		$user = backpack_auth()->user();
+		$companies = $user->companies;
 		$legend  = '';
-		$category = CategoryAdv::findOrFail($type);		
-	    list($priorities, $categories) = $this->PCS();	    
+		$category = CategoryAdv::findOrFail($type);
+	    list($priorities, $categories) = $this->PCS();
 	    return view('ticketit::tickets.create', compact('priorities', 'categories','role','permissions','category','type','companies'));
 	}
 	public function index()
@@ -302,7 +302,7 @@ class SomeController extends TicketsController {
 
 	    $categories = Cache::remember('ticketit::categories', 60, function () {
 	        return CategoryAdv::all();
-	    });	    
+	    });
 	    $statuses = Cache::remember('ticketit::statuses', 60, function () {
 	        return Status::all();
 	    });
@@ -313,4 +313,13 @@ class SomeController extends TicketsController {
 	        return [$priorities->lists('name', 'id'), $categories->lists('name', 'id'), $statuses->lists('name', 'id')];
 	    }
 	}
+	// Print ticket to pdf
+	public function printTicket($id) {
+		$ticket = $this->tickets->findOrFail($id);
+		$pdf= PDF::loadView('pdf.ticket',compact('ticket'));
+		$pdf->setOptions(['isPhpEnabled' => true]);
+		$fileName = ! empty($ticket->code) ? $ticket->code.'.pdf' : "PHIEUYEUCAU-".$ticket->id.'pdf';
+		return $pdf->download($fileName);
+	}
+
 }

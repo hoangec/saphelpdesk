@@ -4,6 +4,8 @@
             <h2 class="header">
                 {{ $ticket->code }}
                 <span class="pull-right">
+                    {!! link_to_route($setting->grab('main_route').'.print',"In phiếu", $ticket->id,
+                                                ['class' => 'btn btn-info']) !!}
                     @if(! $ticket->completed_at && $close_perm == 'yes')
                             {!! link_to_route($setting->grab('main_route').'.complete', trans('ticketit::lang.btn-mark-complete'), $ticket->id,
                                                 ['class' => 'btn btn-success']) !!}

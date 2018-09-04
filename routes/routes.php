@@ -52,6 +52,9 @@ Route::group(['middleware' => \Kordy\Ticketit\Helpers\LaravelVersion::authMiddle
     // Ticket make error
     Route::get("$main_route_path/{id}/error", 'App\Http\Controllers\SomeController@makeError')
             ->name("$main_route.error");
+    //Ticket print
+    Route::get("$main_route_path/{id}/print", 'App\Http\Controllers\SomeController@printTicket')
+            ->name("$main_route.print");
     //Ticket reopen route for permitted user.
     Route::get("$main_route_path/{id}/reopen", 'App\Http\Controllers\SomeController@reopen')
             ->name("$main_route.reopen");
