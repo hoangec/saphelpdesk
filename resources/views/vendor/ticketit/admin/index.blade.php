@@ -17,13 +17,13 @@
                       <div class="row">
                         <div class="col-xs-6">
                             <div class="form-group">
-                              <label>Công ty</label>                              
+                              <label>Công ty</label>
                               <select class="form-control" name="companies" id="company_report">
                                   @foreach ($companies as $company)
                                       <option value="{{ $company->id }}">{{ $company->name }}</option>
                                   @endforeach
                               </select>
-                            </div>                                  
+                            </div>
                         </div>
                         <div class="col-xs-6">
                             <div class="form-group">
@@ -40,7 +40,7 @@
                                 </div>
                                 <input type="text" class="form-control pull-right" id="date_report">
                               </div>
-                            </div>     
+                            </div>
                         </div>
                       </div>
                       <div class="row">
@@ -93,7 +93,7 @@
                       <div class="row">
                         <div class="col-md-12">
                             <div id="curve_chart" style="width: 100%; height: 350px"></div>
-                        </div>                        
+                        </div>
                       </div>
                     </div>
                     <!-- /.box-body -->
@@ -111,59 +111,63 @@
     {{--@include('ticketit::shared.footer')--}}
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-        google.charts.load('current', {'packages':['bar']});       
+        google.charts.load('current', {'packages':['bar']});
     </script>
     <script type="text/javascript">
-        //google.charts.setOnLoadCallback(drawChart);
-        function drawChart() {    
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
           company_id =$("#company_report").val();
-          date = $("#date_report").val();
+          date = $("#date_report").data('daterangepicker');
+          let startDate = date.startDate.format("YYYY-MM-DD");
+          let endDate = date.endDate.format("YYYY-MM-DD");
           var options = {
             chart: {
               title: 'Báo cáo theo loại yêu cầu',
               subtitle: '',
-              series: { 0: {color: 'lightgray'} }        
+              series: { 0: {color: 'lightgray'} }
             }
           };
           $.ajax({
               // Tạo đường dãn tuyệt đối để truyền
               "url":"{{ action('DashboardCusController@getGeneralReportByCategories') }}",
               "type":"get",
-              // Dữ liệu truyền đi 
-              "data":{id:company_id, date:date} ,
+              // Dữ liệu truyền đi
+              "data":{id:company_id, startDate:startDate, endDate: endDate} ,
               "async":true,
               // Xử lý nếu thành công
-              "success":function(result){             
-                    console.log(result);
+              "success":function(result){
                     var data = google.visualization.arrayToDataTable(result);
                     var chart = new google.charts.Bar(document.getElementById('curve_chart'));
                     chart.draw(data, google.charts.Bar.convertOptions(options));
               }
           })
-        } 
+        }
     </script>
     <script type="text/javascript">
         $(document).ready(function(){
             moment.locale('vi');
-            $('#date_report').daterangepicker({
-              locale: { cancelLabel: 'Đóng', applyLabel: 'Chọn' }  
-            });
+            $('#date_report').daterangepicker(
+              {
+                locale: { cancelLabel: 'Đóng', applyLabel: 'Chọn' }
+              }
+            );
             //$('#date_report').daterangepicker("setDate", new Date());
             $('#date_report').on('apply.daterangepicker', function(ev, picker) {
                 date = $(this).val();
-                console.log(date);
                 sDate = picker.startDate.format('YYYY-MM-DD');
                 eDate = picker.endDate.format('YYYY-MM-DD');
                 company_id = $("#company_report").val();
                 getReportByCompanyAndDate(company_id, sDate, eDate);
-                //drawChart();
+                drawChart();
             });
-            // Bắt sự kiện click 
+            // Bắt sự kiện click
 
             $("#company_report").on('change',function(){
                 company_id =$(this).val();
-                date = $("#date_report").val();
-                //getReportByCompanyAndDate(company_id, date);
+                date = $("#date_report").data('daterangepicker');
+                let startDate = date.startDate.format("YYYY-MM-DD");
+                let endDate = date.endDate.format("YYYY-MM-DD");
+                getReportByCompanyAndDate(company_id, startDate, endDate);
                 drawChart();
 
             })
@@ -173,11 +177,11 @@
                     // Tạo đường dãn tuyệt đối để truyền
                     "url":"{{ action('DashboardCusController@getGeneralReportByCompanyAndDate') }}",
                     "type":"get",
-                    // Dữ liệu truyền đi 
+                    // Dữ liệu truyền đi
                     "data":{id:companyId, startDate:sDate, endDate: eDate} ,
                     "async":true,
                     // Xử lý nếu thành công
-                    "success":function(result){             
+                    "success":function(result){
                         $("#ticket_total").text(result.total);
                         $("#ticket_open").text(result.open);
                         $("#ticket_closed").text(result.closed);
@@ -185,6 +189,6 @@
                 })
             }
         })
-    </script> 
+    </script>
     @endif
 @append

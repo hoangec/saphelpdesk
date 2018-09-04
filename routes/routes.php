@@ -5,13 +5,13 @@ Route::group(['middleware' => \Kordy\Ticketit\Helpers\LaravelVersion::authMiddle
     //Ticket public route
     Route::get("$main_route_path/complete", 'App\Http\Controllers\SomeController@indexComplete')
             ->name("$main_route-complete");
-    
+
     Route::get("$main_route_path/error", 'App\Http\Controllers\SomeController@indexError')
             ->name("$main_route-error");
     Route::get("$main_route_path/data/{id?}", 'App\Http\Controllers\SomeController@data')
             ->name("$main_route.data");
 
-    $field_name = last(explode('/', $main_route_path));    
+    $field_name = last(explode('/', $main_route_path));
     Route::resource($main_route_path, 'App\Http\Controllers\SomeController', [
             'names' => [
                 'index'   => $main_route.'.index',
@@ -49,9 +49,9 @@ Route::group(['middleware' => \Kordy\Ticketit\Helpers\LaravelVersion::authMiddle
     //Ticket complete route for permitted user.
     Route::get("$main_route_path/{id}/complete", 'App\Http\Controllers\SomeController@complete')
             ->name("$main_route.complete");
-    // Ticket make error 
+    // Ticket make error
     Route::get("$main_route_path/{id}/error", 'App\Http\Controllers\SomeController@makeError')
-            ->name("$main_route.error");        
+            ->name("$main_route.error");
     //Ticket reopen route for permitted user.
     Route::get("$main_route_path/{id}/reopen", 'App\Http\Controllers\SomeController@reopen')
             ->name("$main_route.reopen");
@@ -73,10 +73,10 @@ Route::group(['middleware' => \Kordy\Ticketit\Helpers\LaravelVersion::authMiddle
     Route::get($admin_route_path, '\App\Http\Controllers\DashboardCusController@indexNew');
     Route::get("$admin_route_path/report_company", '\App\Http\Controllers\DashboardCusController@getGeneralReportByCompanyAndDate');
     Route::get("$admin_route_path/report_categories", '\App\Http\Controllers\DashboardCusController@getGeneralReportByCategories');
-    
+
     Route::group(['middleware' => 'Kordy\Ticketit\Middleware\IsAdminMiddleware'], function () use ($admin_route, $admin_route_path) {
         //Ticket admin index route (ex. http://url/tickets-admin/)
-        
+
 
         //Ticket statuses admin routes (ex. http://url/tickets-admin/status)
         Route::resource("$admin_route_path/status", 'Kordy\Ticketit\Controllers\StatusesController', [
