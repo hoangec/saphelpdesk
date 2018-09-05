@@ -48,8 +48,8 @@
                 line-height: 0.5cm;
             }
             img {
-              max-width:100%;
-              max-height:100%;
+              max-width:70%;
+              max-height:70%;
             }
         </style>
 
